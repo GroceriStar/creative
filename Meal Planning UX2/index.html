@@ -1,0 +1,197 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <script src="jquery.min.js"></script>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      overflow-x: hidden;
+    }
+
+    .prototype-container {
+      position: absolute;
+      height: 100%;
+      overflow: scroll;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .artboard {
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      display: none;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, .12);
+      background-size: contain;
+      overflow: hidden; /* don't allow hotspots to overflow */
+    }
+
+    .artboard.is-active {
+      opacity: 1;
+      display: block;
+    }
+
+    .hotspot {
+      cursor: pointer;
+      position: absolute;
+      opacity: 0;
+    }
+
+    body[can-show-hotspots] .hotspot {
+      background-color: rgba(239, 108, 0, .2);
+      box-shadow:
+          0 0 0 3px rgba(239, 108, 0, .5) inset,
+          0 4px 8px rgba(239, 108, 0, .25);
+    }
+
+    .highlight-hotspots .hotspot {
+      animation: hotspotAnimation .6s ease;
+    }
+
+    @keyframes hotspotAnimation {
+      0% {
+        opacity: 0;
+      }
+      50% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body can-show-hotspots>
+
+  <div class="prototype-container">
+  </div>
+
+  <script>
+
+    class Proto {
+      constructor(prototypeData) {
+        this.prototypeData = prototypeData;
+        this.buildUi();
+      }
+
+      buildUi() {
+        this.buildArtboards();
+
+        if (this.prototypeData.title) {
+          document.title = this.prototypeData.title;
+        }
+
+        $(window).on('hashchange', () => {
+          this.setArtboardVisible(this.getUrlInfo().artboardId);
+        });
+
+        $(document).click(() => {
+          if (this.shouldSuppressHotspotReveal_) {
+            return;
+          }
+
+          $(document.body).removeClass('highlight-hotspots');
+          let f = document.body.offsetWidth;
+          $(document.body).addClass('highlight-hotspots');
+        });
+
+        $(window).on('resize', () => this.resize());
+
+        this.setArtboardVisible(this.getUrlInfo().artboardId);
+
+        this.resize();
+      }
+
+      resize() {
+        let xScale = window.innerHeight / this.prototypeHeight;
+        let yScale = window.innerWidth / this.prototypeWidth;
+        $('.prototype-container').css('zoom', Math.min(1, Math.min(xScale, yScale)));
+      }
+
+      getUrlInfo() {
+        let hash = window.location.hash;
+
+        return {
+          artboardId: hash ? hash.substring(1) : this.prototypeData.flowStartArtboardId,
+        };
+      }
+
+      buildArtboards() {
+        Object.keys(this.prototypeData.artboards).forEach(id => {
+          let artboardData = this.prototypeData.artboards[id];
+          let $artboard = $('<div>')
+              .addClass('artboard')
+              .attr('data-artboard-id', id)
+              .css({
+                backgroundImage: `url(${id}.png)`,
+                width: artboardData.width,
+                height: artboardData.height,
+              })
+              .appendTo('.prototype-container');
+
+          if (id == this.prototypeData.flowStartArtboardId) {
+            // this is the start artboard
+            this.prototypeWidth = artboardData.width;
+            this.prototypeHeight = artboardData.height;
+            $('.prototype-container').css({
+              width: this.prototypeWidth,
+              height: this.prototypeHeight
+            });
+          }
+
+          artboardData.hotspots.forEach(hotspotData => {
+            let $hotspot = $('<div>')
+              .addClass('hotspot')
+              .attr('data-artboard-id', id)
+              .css({
+                left: hotspotData.rectangle.x,
+                top: hotspotData.rectangle.y,
+                width: hotspotData.rectangle.width,
+                height: hotspotData.rectangle.height,
+              })
+              .appendTo($artboard);
+            $hotspot.click(event => {
+              this.gotoTarget(hotspotData.target)
+              event.stopPropagation();
+            });
+          });
+        });
+      }
+
+      gotoTarget(target) {
+        if (target == 'back') {
+          history.back();
+          return;
+        }
+
+        this.gotoArtboard(target);
+      }
+
+      gotoArtboard(artboardId) {
+        window.location.href= '#' + artboardId;
+        $('.prototype-container').scrollTo(0, 0);
+      }
+
+      setArtboardVisible(artboardId) {
+        $(document.body).removeClass('highlight-hotspots');
+        $('.artboard').removeClass('is-active');
+        $(`.artboard[data-artboard-id="${artboardId}"]`).addClass('is-active');
+      }
+    }
+
+  </script>
+  <script>
+    new Proto(
+      {"title":"Meal_Planning_Animate_v2","flowStartArtboardId":"4F24BFC2-5849-46F2-896E-574A0B8874BC","artboards":{"4F24BFC2-5849-46F2-896E-574A0B8874BC":{"title":"Login Screen","width":1440,"height":1024,"hotspots":[{"rectangle":{"x":1200,"y":50,"width":180,"height":60},"target":"1515800F-0385-494F-A576-836DE619B358"}]},"1515800F-0385-494F-A576-836DE619B358":{"title":"Profile Screen","width":1440,"height":1024,"hotspots":[{"rectangle":{"x":29,"y":396,"width":161,"height":54},"target":"F5415CF1-3CF3-4648-951B-06D7B872B2C4"},{"rectangle":{"x":95,"y":736,"width":71,"height":24},"target":"4F24BFC2-5849-46F2-896E-574A0B8874BC"},{"rectangle":{"x":624,"y":332,"width":241,"height":120},"target":"AADD0CD6-DBFE-4643-9A22-401E922F2223"},{"rectangle":{"x":624,"y":504,"width":354,"height":120},"target":"4BB0604B-A4D6-49BE-86A4-477B47801C39"},{"rectangle":{"x":624,"y":676,"width":337,"height":120},"target":"5B6141DE-6BB1-4116-BFB7-FC75DCD8047B"}]},"F5415CF1-3CF3-4648-951B-06D7B872B2C4":{"title":"Your Meals","width":1440,"height":1024,"hotspots":[{"rectangle":{"x":1259,"y":42,"width":24,"height":24},"target":"988E63A0-B071-421B-8151-A34267B4B92E"},{"rectangle":{"x":594,"y":193,"width":442,"height":639},"target":"CC45A065-F719-4C4B-8EF5-65016892AE4B"},{"rectangle":{"x":26,"y":708,"width":133,"height":54},"target":"1515800F-0385-494F-A576-836DE619B358"}]},"AADD0CD6-DBFE-4643-9A22-401E922F2223":{"title":"Diet Plans","width":1440,"height":1024,"hotspots":[{"rectangle":{"x":29,"y":396,"width":161,"height":54},"target":"F5415CF1-3CF3-4648-951B-06D7B872B2C4"},{"rectangle":{"x":29,"y":626,"width":133,"height":54},"target":"1515800F-0385-494F-A576-836DE619B358"},{"rectangle":{"x":95,"y":736,"width":71,"height":24},"target":"4F24BFC2-5849-46F2-896E-574A0B8874BC"}]},"4BB0604B-A4D6-49BE-86A4-477B47801C39":{"title":"Groceries","width":1440,"height":1024,"hotspots":[{"rectangle":{"x":29,"y":396,"width":161,"height":54},"target":"F5415CF1-3CF3-4648-951B-06D7B872B2C4"},{"rectangle":{"x":29,"y":626,"width":133,"height":54},"target":"1515800F-0385-494F-A576-836DE619B358"},{"rectangle":{"x":95,"y":736,"width":71,"height":24},"target":"4F24BFC2-5849-46F2-896E-574A0B8874BC"}]},"5B6141DE-6BB1-4116-BFB7-FC75DCD8047B":{"title":"Allergies","width":1440,"height":1024,"hotspots":[{"rectangle":{"x":29,"y":396,"width":161,"height":54},"target":"F5415CF1-3CF3-4648-951B-06D7B872B2C4"},{"rectangle":{"x":29,"y":626,"width":133,"height":54},"target":"1515800F-0385-494F-A576-836DE619B358"},{"rectangle":{"x":95,"y":736,"width":71,"height":24},"target":"4F24BFC2-5849-46F2-896E-574A0B8874BC"}]},"988E63A0-B071-421B-8151-A34267B4B92E":{"title":"Meal Calendar","width":1440,"height":1024,"hotspots":[{"rectangle":{"x":26,"y":478,"width":161,"height":54},"target":"F5415CF1-3CF3-4648-951B-06D7B872B2C4"},{"rectangle":{"x":26,"y":708,"width":133,"height":54},"target":"1515800F-0385-494F-A576-836DE619B358"},{"rectangle":{"x":26,"y":810,"width":44,"height":44},"target":"4F24BFC2-5849-46F2-896E-574A0B8874BC"}]},"CC45A065-F719-4C4B-8EF5-65016892AE4B":{"title":"Meal - Ingredients","width":1440,"height":1024,"hotspots":[{"rectangle":{"x":1259,"y":42,"width":24,"height":24},"target":"988E63A0-B071-421B-8151-A34267B4B92E"},{"rectangle":{"x":1351.5,"y":143.5,"width":2,"height":257},"target":"C58D39CE-C202-4912-A12F-109F53CD01D4"}]},"C58D39CE-C202-4912-A12F-109F53CD01D4":{"title":"Meal - Recipe","width":1440,"height":1024,"hotspots":[{"rectangle":{"x":1259,"y":42,"width":24,"height":24},"target":"988E63A0-B071-421B-8151-A34267B4B92E"},{"rectangle":{"x":1351.5,"y":413.5,"width":2,"height":257},"target":"A6C73493-A590-4FF1-81E4-435DBDCA03D1"}]},"A6C73493-A590-4FF1-81E4-435DBDCA03D1":{"title":"Meal - Recipe #2","width":1440,"height":1024,"hotspots":[{"rectangle":{"x":1259,"y":42,"width":24,"height":24},"target":"988E63A0-B071-421B-8151-A34267B4B92E"},{"rectangle":{"x":26,"y":810,"width":137,"height":44},"target":"4F24BFC2-5849-46F2-896E-574A0B8874BC"}]}}}
+    );
+  </script>
+
+</body>
+</html>
