@@ -1,0 +1,197 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <script src="jquery.min.js"></script>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      overflow-x: hidden;
+    }
+
+    .prototype-container {
+      position: absolute;
+      height: 100%;
+      overflow: scroll;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .artboard {
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      display: none;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, .12);
+      background-size: contain;
+      overflow: hidden; /* don't allow hotspots to overflow */
+    }
+
+    .artboard.is-active {
+      opacity: 1;
+      display: block;
+    }
+
+    .hotspot {
+      cursor: pointer;
+      position: absolute;
+      opacity: 0;
+    }
+
+    body[can-show-hotspots] .hotspot {
+      background-color: rgba(239, 108, 0, .2);
+      box-shadow:
+          0 0 0 3px rgba(239, 108, 0, .5) inset,
+          0 4px 8px rgba(239, 108, 0, .25);
+    }
+
+    .highlight-hotspots .hotspot {
+      animation: hotspotAnimation .6s ease;
+    }
+
+    @keyframes hotspotAnimation {
+      0% {
+        opacity: 0;
+      }
+      50% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body can-show-hotspots>
+
+  <div class="prototype-container">
+  </div>
+
+  <script>
+
+    class Proto {
+      constructor(prototypeData) {
+        this.prototypeData = prototypeData;
+        this.buildUi();
+      }
+
+      buildUi() {
+        this.buildArtboards();
+
+        if (this.prototypeData.title) {
+          document.title = this.prototypeData.title;
+        }
+
+        $(window).on('hashchange', () => {
+          this.setArtboardVisible(this.getUrlInfo().artboardId);
+        });
+
+        $(document).click(() => {
+          if (this.shouldSuppressHotspotReveal_) {
+            return;
+          }
+
+          $(document.body).removeClass('highlight-hotspots');
+          let f = document.body.offsetWidth;
+          $(document.body).addClass('highlight-hotspots');
+        });
+
+        $(window).on('resize', () => this.resize());
+
+        this.setArtboardVisible(this.getUrlInfo().artboardId);
+
+        this.resize();
+      }
+
+      resize() {
+        let xScale = window.innerHeight / this.prototypeHeight;
+        let yScale = window.innerWidth / this.prototypeWidth;
+        $('.prototype-container').css('zoom', Math.min(1, Math.min(xScale, yScale)));
+      }
+
+      getUrlInfo() {
+        let hash = window.location.hash;
+
+        return {
+          artboardId: hash ? hash.substring(1) : this.prototypeData.flowStartArtboardId,
+        };
+      }
+
+      buildArtboards() {
+        Object.keys(this.prototypeData.artboards).forEach(id => {
+          let artboardData = this.prototypeData.artboards[id];
+          let $artboard = $('<div>')
+              .addClass('artboard')
+              .attr('data-artboard-id', id)
+              .css({
+                backgroundImage: `url(${id}.png)`,
+                width: artboardData.width,
+                height: artboardData.height,
+              })
+              .appendTo('.prototype-container');
+
+          if (id == this.prototypeData.flowStartArtboardId) {
+            // this is the start artboard
+            this.prototypeWidth = artboardData.width;
+            this.prototypeHeight = artboardData.height;
+            $('.prototype-container').css({
+              width: this.prototypeWidth,
+              height: this.prototypeHeight
+            });
+          }
+
+          artboardData.hotspots.forEach(hotspotData => {
+            let $hotspot = $('<div>')
+              .addClass('hotspot')
+              .attr('data-artboard-id', id)
+              .css({
+                left: hotspotData.rectangle.x,
+                top: hotspotData.rectangle.y,
+                width: hotspotData.rectangle.width,
+                height: hotspotData.rectangle.height,
+              })
+              .appendTo($artboard);
+            $hotspot.click(event => {
+              this.gotoTarget(hotspotData.target)
+              event.stopPropagation();
+            });
+          });
+        });
+      }
+
+      gotoTarget(target) {
+        if (target == 'back') {
+          history.back();
+          return;
+        }
+
+        this.gotoArtboard(target);
+      }
+
+      gotoArtboard(artboardId) {
+        window.location.href= '#' + artboardId;
+        $('.prototype-container').scrollTo(0, 0);
+      }
+
+      setArtboardVisible(artboardId) {
+        $(document.body).removeClass('highlight-hotspots');
+        $('.artboard').removeClass('is-active');
+        $(`.artboard[data-artboard-id="${artboardId}"]`).addClass('is-active');
+      }
+    }
+
+  </script>
+  <script>
+    new Proto(
+      {"title":"Meal_Planning_Mobile","flowStartArtboardId":"2A516475-6ACD-4511-BE38-ACDA69483D7F","artboards":{"2A516475-6ACD-4511-BE38-ACDA69483D7F":{"title":"Initial Screen","width":375,"height":812,"hotspots":[{"rectangle":{"x":28,"y":391,"width":320,"height":60},"target":"353048B4-9C80-44C7-992D-8401D19FF590"}]},"353048B4-9C80-44C7-992D-8401D19FF590":{"title":"Login","width":375,"height":812,"hotspots":[{"rectangle":{"x":28,"y":586,"width":320,"height":60},"target":"AB9987E6-DEF9-427B-AF3F-D299A562743B"}]},"AB9987E6-DEF9-427B-AF3F-D299A562743B":{"title":"Main Page","width":375,"height":812,"hotspots":[{"rectangle":{"x":10,"y":59,"width":40,"height":40},"target":"4710AF4A-291C-4CA2-9536-3B3E8C01F7A5"}]},"4710AF4A-291C-4CA2-9536-3B3E8C01F7A5":{"title":"Sidebar","width":375,"height":812,"hotspots":[{"rectangle":{"x":10,"y":59,"width":40,"height":40},"target":"AB9987E6-DEF9-427B-AF3F-D299A562743B"},{"rectangle":{"x":92,"y":231,"width":179,"height":54},"target":"2E6DF8A5-6A68-4275-A54E-E18E4D49FC7B"},{"rectangle":{"x":96,"y":669,"width":137,"height":44},"target":"2A516475-6ACD-4511-BE38-ACDA69483D7F"}]},"2E6DF8A5-6A68-4275-A54E-E18E4D49FC7B":{"title":"Search Page","width":375,"height":812,"hotspots":[{"rectangle":{"x":10,"y":59,"width":40,"height":40},"target":"4710AF4A-291C-4CA2-9536-3B3E8C01F7A5"},{"rectangle":{"x":30,"y":521,"width":315,"height":108},"target":"AB8027D3-DD63-4F4F-A353-4C5591412456"}]},"AB8027D3-DD63-4F4F-A353-4C5591412456":{"title":"Recipe #1","width":375,"height":812,"hotspots":[{"rectangle":{"x":10,"y":59,"width":40,"height":40},"target":"4710AF4A-291C-4CA2-9536-3B3E8C01F7A5"},{"rectangle":{"x":329,"y":766,"width":24,"height":24},"target":"7997F9FF-3517-4734-8DA2-6245B3AE8331"}]},"7997F9FF-3517-4734-8DA2-6245B3AE8331":{"title":"Recipe #2","width":375,"height":812,"hotspots":[{"rectangle":{"x":10,"y":59,"width":40,"height":40},"target":"4710AF4A-291C-4CA2-9536-3B3E8C01F7A5"},{"rectangle":{"x":329,"y":766,"width":24,"height":24},"target":"54A84DCB-F7EE-49E3-8DA1-1EF07F873622"},{"rectangle":{"x":20,"y":766,"width":24,"height":24},"target":"AB8027D3-DD63-4F4F-A353-4C5591412456"}]},"54A84DCB-F7EE-49E3-8DA1-1EF07F873622":{"title":"Recipe #2 Copy","width":375,"height":812,"hotspots":[{"rectangle":{"x":10,"y":59,"width":40,"height":40},"target":"4710AF4A-291C-4CA2-9536-3B3E8C01F7A5"},{"rectangle":{"x":329,"y":766,"width":24,"height":24},"target":"AB9987E6-DEF9-427B-AF3F-D299A562743B"},{"rectangle":{"x":20,"y":766,"width":24,"height":24},"target":"7997F9FF-3517-4734-8DA2-6245B3AE8331"}]}}}
+    );
+  </script>
+
+</body>
+</html>
