@@ -129,7 +129,7 @@ https://www.pinterest.com/pin/AeCvj_sFKbX-tR9aSRQvTS26T7B-81rCHM8C0PQuLAoKExh6_6
 
 Maybe some of this lists was not processed too.
 We'll recheck it later:
-(1)[https://github.com/GroceriStar/groceristar/issues/420]
-(2)[https://github.com/GroceriStar/groceristar/issues/421]
-(3)[https://github.com/GroceriStar/groceristar/issues/422]
+[1](https://github.com/GroceriStar/groceristar/issues/420)
+[2](https://github.com/GroceriStar/groceristar/issues/421)
+[3](https://github.com/GroceriStar/groceristar/issues/422)
 
