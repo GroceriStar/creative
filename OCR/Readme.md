@@ -1,6 +1,7 @@
 ## Grocery Lists for ML parcing from Pinterest.
 
-New, not processed
+New, not processed links(i assume)
+
 https://www.pinterest.com/pin/531565562241866727/
 
 https://www.pinterest.com/pin/AW8Vs3ngYnt8wK1IQgGaI_m-UvZg_1JE074tz-T7HAiJ8xXMI8GgzGM/
@@ -125,3 +126,10 @@ https://www.pinterest.com/pin/35254809562340969/
 https://www.pinterest.com/pin/395542779768615687/
 
 https://www.pinterest.com/pin/AeCvj_sFKbX-tR9aSRQvTS26T7B-81rCHM8C0PQuLAoKExh6_6KISeM/
+
+Maybe some of this lists was not processed too.
+We'll recheck it later:
+(1)[https://github.com/GroceriStar/groceristar/issues/420]
+(2)[https://github.com/GroceriStar/groceristar/issues/421]
+(3)[https://github.com/GroceriStar/groceristar/issues/422]
+
