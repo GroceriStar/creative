@@ -16,22 +16,22 @@
 
 ----
 
-router.get('/favorites', ensureLoggedIn('/auth/account')
+router.get('**/favorites**', ensureLoggedIn('/auth/account')
 
 
-  router.post('/delete/favorites/', ensureLoggedIn('/auth/account')
+  router.post('**/delete/favorites/**', ensureLoggedIn('/auth/account')
 
 
 
-  router.get('/add/fav2/:ingredientId', ensureLoggedIn('/auth/account')
+  router.get('**/add/fav2/:ingredientId**', ensureLoggedIn('/auth/account')
 
     
 
-  router.get('/add/fav2/clear',  ensureLoggedIn('/auth/account')
+  router.get('**/add/fav2/clear**',  ensureLoggedIn('/auth/account')
 
-    ---
+---
 
-      router.get('/view/grocery/:groceryId',
+  **/view/grocery/:groceryId**     
     ensureLoggedIn('/auth/account'),
     groceryController.viewGrocery);
 
@@ -41,10 +41,10 @@ router.get('/favorites', ensureLoggedIn('/auth/account')
   // as not logged in user a data from ultimate grocery list
   // for simplifying things i'll just duplicate a lot stuff
   // and make it work as quicker as i can
-  router.get('/view/ultimategrocery/',
+  router.get('**/view/ultimategrocery/**',
     groceryController.viewUltimateGrocery);
 
- router.get('/view/grocery/hidden/:groceryId',
+ router.get('**/view/grocery/hidden/:groceryId**',
   ensureLoggedIn('/auth/account'),
   function(req, res, next){
     var Grocery   = app.models.Grocery;
@@ -70,7 +70,7 @@ router.get('/favorites', ensureLoggedIn('/auth/account')
 
 
 
-  router.get('/auth/attach-grocery-to-user/:groceryId',
+  router.get('**/auth/attach-grocery-to-user/:groceryId**',
     ensureLoggedIn('/auth/account'),
     function(req, res, next) {
     var groceryId = req.params.groceryId;
@@ -91,57 +91,57 @@ router.get('/favorites', ensureLoggedIn('/auth/account')
 
 
 
- router.get('/remove/grocery/:groceryId',
+ router.get('**/remove/grocery/:groceryId**',
   ensureLoggedIn('/auth/account'),
   groceryController.removeGrocery);
 
 
 
 
-  router.get('/clone/:groceryId', groceryController.cloneGrocery);
+  router.get('**/clone/:groceryId**', groceryController.cloneGrocery);
 
-  router.post('/cloneform', groceryController.postCloneForm);
+  router.post('**/cloneform**', groceryController.postCloneForm);
 
-  router.get('/afterclone', groceryController.justRedirect);
+  router.get('**/afterclone**', groceryController.justRedirect);
 
-  router.get('/clone-grocery/:groceryId', groceryController.getCloneForm);
+  router.get('**/clone-grocery/:groceryId**', groceryController.getCloneForm);
 
 
 
 // :todo finish
- router.get('create-new-grocery',
+ router.get('**create-new-grocery**',
   ensureLoggedIn('/auth/account'),
   groceryController.createNewGrocery);
 
 // :todo finish Not used functionality right now
- router.get('/view/groceries',
+ router.get('**/view/groceries**',
   ensureLoggedIn('/auth/account'),
 
  // Change Grocery Name functionality
 
- router.get('/change/grocery/name/:groceryId',
+ router.get('**/change/grocery/name/:groceryId**',
   ensureLoggedIn('/auth/account'),
   groceryController.changeName);
 
   // Update grocery list name
-  router.post('/update/name',
+  router.post('**/update/name**',
     groceryController.postUpdateName);
 
 
   // Shopping part, i.e. TODO list
-  router.get('/shopping/:groceryId/:departmentId',
+  router.get('**/shopping/:groceryId/:departmentId**',
     groceryController.shopping);
 
 
 
 // :todo this must be a remote method
   // Ing create. Not working with not advanced forms
-  router.post('/create/ing/', 
+  router.post('**/create/ing/**', 
 
 
 
   // Ing change name
-  router.post('/changename/', 
+  router.post('**/changename/**', 
 
 
 
@@ -149,21 +149,21 @@ router.get('/favorites', ensureLoggedIn('/auth/account')
 
 
   // Ing change Department ID
-  router.get('/changedepartmentid/:id/:departmentId', 
+  router.get('**/changedepartmentid/:id/:departmentId**', 
 
 
     ----
 
 
-    router.post('/togglepurchased', 
+router.post('**/togglepurchased**', 
 
 
-  router.post('/clearpurchased', 
+  router.post('**/clearpurchased**', 
 
 
   // used for ajax call from todo list
   // :todo maybe move to shopping controller, for easy keeping all things in one place?
-  router.post('/unattach'
+  router.post('**/unattach**'
 
 
 #### Release 1 pages, layouts, etc. hope names makes it more clear
