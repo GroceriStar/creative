@@ -251,3 +251,12 @@ router.post('**/togglepurchased**',
 
 
 ![XXX](https://github.com/GroceriStar/creative/blob/master/prev.%20design.screens/Shopping%20List%20%205a6fb00ef3909e0012274dab.png)
+
+
+#### 111
+
+update flow favorites
+![image](https://user-images.githubusercontent.com/1469198/37487700-0b3f4ba8-289b-11e8-840b-3f0c9c0afaea.png)
+
+
+
